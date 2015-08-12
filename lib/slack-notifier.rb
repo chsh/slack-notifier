@@ -14,9 +14,14 @@ module Slack
       @default_payload = options
     end
 
-    def ping message, options={}
-      message      = LinkFormatter.format(message)
-      payload      = default_payload.merge(options).merge(text: message)
+    def ping message, options=nil
+      if options.nil? && message.is_a?(Hash)
+        payload    = default_payload.merge(message)
+      else
+        options    ||= {}
+        message    = LinkFormatter.format(message)
+        payload    = default_payload.merge(options).merge(text: message)
+      end
       client       = payload.delete(:http_client) || http_client
       http_options = payload.delete(:http_options)
 
